@@ -1,0 +1,42 @@
+{
+  "name": "github-webhook-handler",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js",
+    "lint-staged": "lint-staged"
+  },
+  "lint-staged": {
+    "**/*.js": [
+      "eslint --fix",
+      "git add"
+    ],
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
+  "pre-commit": "lint-staged",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gbv/github-webhook-handler.git"
+  },
+  "author": "Stefan Peters <stefandesu@exo.pm> (https://exo.pm)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gbv/github-webhook-handler/issues"
+  },
+  "homepage": "https://github.com/gbv/github-webhook-handler#readme",
+  "devDependencies": {
+    "eslint": "^5.15.1",
+    "lint-staged": "^8.1.5",
+    "nodemon": "^1.18.10",
+    "pre-commit": "^1.2.2"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4"
+  }
+}

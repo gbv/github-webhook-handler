@@ -1,0 +1,4 @@
+{
+  "name": "github-webhook-handler",
+  "script": "./index.js"
+}
