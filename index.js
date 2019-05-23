@@ -24,7 +24,17 @@ app.use(bodyParser.json())
 
 app.post("/", (req, res) => {
   // Run command according to payload
-  const matches = config.webhooks.filter(entry => entry.repository == req.body.repository.full_name)
+  const matches = config.webhooks.filter(
+    entry =>
+      // Check repository name
+      entry.repository == req.body.repository.full_name &&
+      (
+        // Check ref
+        (!config.ref && !entry.ref) ||
+        (!entry.ref && config.ref == req.body.ref) ||
+        (entry.ref && entry.ref == req.body.ref)
+      )
+  )
   for (let match of matches) {
     let sig = "sha1=" + crypto.createHmac("sha1", match.secret || config.secret).update(JSON.stringify(req.body)).digest("hex")
     if (req.headers["x-hub-signature"] === sig) {
