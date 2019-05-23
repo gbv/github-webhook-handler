@@ -39,7 +39,7 @@ app.post("/", (req, res) => {
     let sig = "sha1=" + crypto.createHmac("sha1", match.secret || config.secret).update(JSON.stringify(req.body)).digest("hex")
     if (req.headers["x-hub-signature"] === sig) {
       let command = `cd ${match.path} && ${match.command}`
-      console.log("Running", command)
+      console.log(`${new Date()} (${req.body.ref} on ${match.repository}):\n\t${command}`)
       exec(command)
     }
   }
