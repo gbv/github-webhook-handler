@@ -54,7 +54,15 @@ app.post("/", (req, res) => {
   for (let match of matches) {
     let sig = "sha1=" + crypto.createHmac("sha1", match.secret || config.secret).update(JSON.stringify(req.body)).digest("hex")
     if (req.headers["x-hub-signature"] === sig) {
-      let command = `cd ${match.path} && ${match.command}`
+      let command = ""
+      // Add environment variables if needed
+      _.forEach(match.env || {}, (env, path) => {
+        let value = _.get(req, path)
+        if (_.isString(value)) {
+          command += `${env}=${value}; `
+        }
+      })
+      command += `cd ${match.path} && ${match.command}`
       console.log(`${new Date()} (${req.body.ref} on ${match.repository}):\n\t${command}`)
       exec(command)
     }

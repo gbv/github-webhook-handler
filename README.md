@@ -25,7 +25,10 @@ A `config.json` file is necessary. It should look like this:
       "path": "/path/to/project/",
       "repository": "user/projectName",
       "ref": "refs/heads/master",
-      "command": "git pull"
+      "command": "git pull; echo $EVENT",
+      "env": {
+        "headers.x-github-event": "EVENT"
+      }
     }
   ]
 }
@@ -44,3 +47,5 @@ A `config.json` file is necessary. It should look like this:
     - `event` (will be moved into `filters["headers.x-github-event"]`), e.g. "release"
     - `action` (will be moved into `filters["body.action"]`), e.g. "published"
     - `ref` (will be moved into `filters["body.ref"]`), e.g. "refs/heads/dev"
+  - It is also possible to provide environment variables based on the `req` object for the command. These are defined as an object `env` where the keys are key paths on `req` (like in `filter`) and the values are the names of the variable that will be set before exectuing the command.
+    - In the example above, the "x-github-event" header will be made available as `$EVENT`.
