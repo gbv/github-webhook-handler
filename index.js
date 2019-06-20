@@ -59,7 +59,7 @@ app.post("/", (req, res) => {
       _.forEach(match.env || {}, (env, path) => {
         let value = _.get(req, path)
         if (_.isString(value)) {
-          command += `${env}=${value}; `
+          command += `${env}='${value}'; `
         }
       })
       command += `cd ${match.path} && ${match.command}`
