@@ -1,5 +1,6 @@
-
 const crypto = require("crypto")
+const _ = require("lodash")
+
 let config
 try {
   config = require("./config.json")
@@ -14,6 +15,24 @@ if (config.webhooks.length) {
 } else {
   console.warn("There are no webhooks configured in config.json. Please add at least one webhook.")
 }
+// Adjust webhooks
+const propertyMappings = {
+  repository: "body.repository.full_name",
+  event: "headers.x-github-event",
+  action: "body.action",
+  ref: "body.ref",
+}
+for (let webhook of config.webhooks) {
+  if (!webhook.filter) {
+    webhook.filter = {}
+  }
+  _.forEach(propertyMappings, (value, key) => {
+    if (webhook[key]) {
+      webhook.filter[value] = webhook[key]
+    }
+  })
+}
+
 const exec = require("child_process").exec
 
 const express = require("express")
@@ -26,14 +45,11 @@ app.post("/", (req, res) => {
   // Run command according to payload
   const matches = config.webhooks.filter(
     entry =>
-      // Check repository name
-      entry.repository == req.body.repository.full_name &&
-      (
-        // Check ref
-        (!config.ref && !entry.ref) ||
-        (!entry.ref && config.ref == req.body.ref) ||
-        (entry.ref && entry.ref == req.body.ref)
-      )
+      // Check filter
+      _.keys(entry.filter)
+        .map(key => _.isEqual(entry.filter[key], _.get(req, key)))
+        // All filters have to match
+        .reduce((a, b) => a && b, true)
   )
   for (let match of matches) {
     let sig = "sha1=" + crypto.createHmac("sha1", match.secret || config.secret).update(JSON.stringify(req.body)).digest("hex")
