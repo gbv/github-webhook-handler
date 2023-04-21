@@ -42,11 +42,11 @@ A `config.json` file is necessary. It should look like this:
   - `command` (command which to run in the project folder, e.g. `git pull`).
   - A webhook can also have a separate GitHub `secret` configured to override the global secret.
   - A webhook can also have a `filter` property where the keys are key paths on the `req` object (like `headers.x-github-event` or `body.action`). The values will be compared and only if all filters match, the webook is executed.
-  - There are multiple shortcuts for these filters that can be given directly in the webhook object (**not** the filters object):
-    - `repository` (will be moved into `filters["body.repository.full_name"]`), e.g. "gbv/cocoda"
-    - `event` (will be moved into `filters["headers.x-github-event"]`), e.g. "release"
-    - `action` (will be moved into `filters["body.action"]`), e.g. "published"
-    - `ref` (will be moved into `filters["body.ref"]`), e.g. "refs/heads/dev"
+  - There are multiple shortcuts for these filters that can be given directly in the webhook object (**not** the filter object):
+    - `repository` (will be moved into `filter["body.repository.full_name"]`), e.g. "gbv/cocoda"
+    - `event` (will be moved into `filter["headers.x-github-event"]`), e.g. "release"
+    - `action` (will be moved into `filter["body.action"]`), e.g. "published"
+    - `ref` (will be moved into `filter["body.ref"]`), e.g. "refs/heads/dev"
   - It is also possible to provide environment variables based on the `req` object for the command. These are defined as an object `env` where the keys are key paths on `req` (like in `filter`) and the values are the names of the variable that will be set before exectuing the command.
     - In the example above, the "x-github-event" header will be made available as `$EVENT`.
 
