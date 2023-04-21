@@ -1,9 +1,12 @@
-const crypto = require("crypto")
-const _ = require("lodash")
+import crypto from "node:crypto"
+import _ from "lodash"
+
+import fs from "node:fs"
+import path from "node:path"
 
 let config
 try {
-  config = require("./config.json")
+  config = JSON.parse(fs.readFileSync("./config.json"))
 } catch(error) {
   console.error("config.json file is required (see README).")
   process.exit(1)
@@ -33,17 +36,15 @@ for (let webhook of config.webhooks) {
   })
 }
 
-const exec = require("child_process").exec
+import { exec } from "node:child_process"
 
-const express = require("express")
-const bodyParser = require("body-parser")
+import express from "express"
+import bodyParser from "body-parser"
 
 let app = express()
 app.use(bodyParser.json())
 
-const fs = require("node:fs")
-const path = require("node:path")
-const Version = require("./version.js")
+import Version from "./version.js"
 
 app.post("/", (req, res) => {
   // Run command according to payload

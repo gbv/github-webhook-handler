@@ -1,5 +1,5 @@
 // Version class for checking release versions; adjusted from jskos-server
-module.exports = class Version {
+export default class Version {
 
   constructor(version) {
     if (version.startsWith("v")) {
