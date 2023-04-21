@@ -41,6 +41,10 @@ const bodyParser = require("body-parser")
 let app = express()
 app.use(bodyParser.json())
 
+const fs = require("node:fs")
+const path = require("node:path")
+const Version = require("./version.js")
+
 app.post("/", (req, res) => {
   // Run command according to payload
   const matches = config.webhooks.filter(
@@ -52,6 +56,9 @@ app.post("/", (req, res) => {
         .reduce((a, b) => a && b, true)
   )
   for (let match of matches) {
+    const log = (message) => {
+      console.log(`${new Date().toISOString()} (${req.body.ref} on ${match.repository}):\n\t${message}`)
+    }
     let sig = "sha1=" + crypto.createHmac("sha1", match.secret || config.secret).update(JSON.stringify(req.body)).digest("hex")
     if (req.headers["x-hub-signature"] === sig) {
       let command = ""
@@ -62,8 +69,22 @@ app.post("/", (req, res) => {
           command += `${env}='${value}'; `
         }
       })
+      // For "release" event with action "published", compare version numbers if applicable and don't run command if it's a new major release
+      if (!match.skipReleaseCheck && match.event === "release" && match.action === "published") {
+        try {
+          const packageInfo = JSON.parse(fs.readFileSync(path.resolve(match.path, "package.json")))
+          const fromVersion = Version.from(packageInfo.version)
+          const toVersion = Version.from(req.body.release.tag_name)
+          if (toVersion.major > fromVersion.major) {
+            log(`Skipping command because release is a major update (${fromVersion.version} -> ${toVersion.version}).\n\tYou can change this behavior by setting \`skipReleaseCheck\` to \`true\` on the webhook.`)
+            continue
+          }
+        } catch (error) {
+          // Skip error (non-existent package.json, misformed package.json, etc.)
+        }
+      }
       command += `cd ${match.path} && ${match.command}`
-      console.log(`${new Date()} (${req.body.ref} on ${match.repository}):\n\t${command}`)
+      log(`${command}`)
       exec(command)
     }
   }
