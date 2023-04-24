@@ -70,8 +70,8 @@ app.post("/", (req, res) => {
           command += `${env}='${value}'; `
         }
       })
-      // For "release" event with action "published", compare version numbers if applicable and don't run command if it's a new major release
-      if (!match.skipReleaseCheck && match.event === "release" && match.action === "published") {
+      // For "release" event with action "published" or "released", compare version numbers if applicable and don't run command if it's a new major release
+      if (!match.skipReleaseCheck && match.event === "release" && (match.action === "published" || match.action === "released")) {
         try {
           const packageInfo = JSON.parse(fs.readFileSync(path.resolve(match.path, "package.json")))
           const fromVersion = Version.from(packageInfo.version)
