@@ -2,3 +2,6 @@
 node_modules
 .env
 config.json
+
+# pm2 ecosystem file
+ecosystem.config.json

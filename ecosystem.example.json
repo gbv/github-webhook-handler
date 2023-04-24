@@ -1,0 +1,7 @@
+{
+  "name": "github-webhook-handler",
+  "script": "./index.js",
+  "env": {
+    "NODE_ENV": "production"
+  }
+}
