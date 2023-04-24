@@ -58,7 +58,7 @@ app.post("/", (req, res) => {
   )
   for (let match of matches) {
     const log = (message) => {
-      console.log(`${new Date().toISOString()} (${req.body.ref} on ${match.repository}):\n\t${message}`)
+      console.log(`${new Date().toISOString()} (${req.body.ref || match.path} on ${match.repository}):\n\t${message}`)
     }
     let sig = "sha1=" + crypto.createHmac("sha1", match.secret || config.secret).update(JSON.stringify(req.body)).digest("hex")
     if (req.headers["x-hub-signature"] === sig) {
