@@ -70,14 +70,20 @@ app.post("/", (req, res) => {
           command += `${env}='${value}'; `
         }
       })
-      // For "release" event with action "published" or "released", compare version numbers if applicable and don't run command if it's a new major release
+      // For "release" event with action "published" or "released", compare version numbers if applicable and don't run command if it's a new major release or a downgrade
       if (!match.skipReleaseCheck && match.event === "release" && (match.action === "published" || match.action === "released")) {
         try {
           const packageInfo = JSON.parse(fs.readFileSync(path.resolve(match.path, "package.json")))
           const fromVersion = Version.from(packageInfo.version)
           const toVersion = Version.from(req.body.release.tag_name)
+          let reason
           if (toVersion.major > fromVersion.major) {
-            log(`Skipping command because release is a major update (${fromVersion.version} -> ${toVersion.version}).\n\tYou can change this behavior by setting \`skipReleaseCheck\` to \`true\` on the webhook.`)
+            reason = "major update"
+          } else if (toVersion.lt(fromVersion)) {
+            reason = "downgrade"
+          }
+          if (reason) {
+            log(`Skipping command because release is a ${downgrade} (${fromVersion.version} -> ${toVersion.version}).\n\tYou can change this behavior by setting \`skipReleaseCheck\` to \`true\` on the webhook.`)
             continue
           }
         } catch (error) {

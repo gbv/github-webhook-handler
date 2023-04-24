@@ -52,7 +52,7 @@ A `config.json` file is necessary. It should look like this:
     - In the example above, the "x-github-event" header will be made available as `$EVENT`.
 
 ### Special Case: Release Handling
-If `event` is set to "release" and `action` is set to "released" or "published", the release version number is checked against the `package.json` file in `path`, if it exists. If it is a new major release (compared to the local version), the command is **not** executed. This behavior can be overridden by setting `skipReleaseCheck` to `true` on the webhook.
+If `event` is set to "release" and `action` is set to "released" or "published", the release version number is checked against the `package.json` file in `path`, if it exists. If it is a new major release or a downgrade (compared to the local version), the command is **not** executed. This behavior can be overridden by setting `skipReleaseCheck` to `true` on the webhook.
 
 ## Webhook setup
 
