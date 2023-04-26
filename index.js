@@ -10,7 +10,7 @@ try {
 } catch (error) {
   // ignore
 }
-console.log(`Starting GitHub Webhook Handler version ${info && info.version} (gbv/github-webhook-handler)...`)
+console.log(`Starting GitHub Webhook Handler version ${info?.version} (gbv/github-webhook-handler)...`)
 
 let config
 try {
@@ -62,7 +62,7 @@ app.post("/", (req, res) => {
       _.keys(entry.filter)
         .map(key => _.isEqual(entry.filter[key], _.get(req, key)))
         // All filters have to match
-        .reduce((a, b) => a && b, true)
+        .reduce((a, b) => a && b, true),
   )
   for (let match of matches) {
     const log = (message) => {
