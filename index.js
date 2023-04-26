@@ -4,6 +4,14 @@ import _ from "lodash"
 import fs from "node:fs"
 import path from "node:path"
 
+let info
+try {
+  info = JSON.parse(fs.readFileSync("./package.json"))
+} catch (error) {
+  // ignore
+}
+console.log(`Starting GitHub Webhook Handler version ${info && info.version} (gbv/github-webhook-handler)...`)
+
 let config
 try {
   config = JSON.parse(fs.readFileSync("./config.json"))
