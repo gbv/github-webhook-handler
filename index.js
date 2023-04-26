@@ -91,7 +91,7 @@ app.post("/", (req, res) => {
             reason = "downgrade"
           }
           if (reason) {
-            log(`Skipping command because release is a ${downgrade} (${fromVersion.version} -> ${toVersion.version}).\n\tYou can change this behavior by setting \`skipReleaseCheck\` to \`true\` on the webhook.`)
+            log(`Skipping command because release is a ${reason} (${fromVersion.version} -> ${toVersion.version}).\n\tYou can change this behavior by setting \`skipReleaseCheck\` to \`true\` on the webhook.`)
             continue
           }
         } catch (error) {
