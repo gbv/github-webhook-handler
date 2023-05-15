@@ -110,7 +110,9 @@ app.post("/", (req, res) => {
       }
       command += `cd ${match.path} && ${match.command}`
       log(`${command}`)
-      exec(command)
+      exec(command, (error) => {
+        error && log(error.message, { method: "error" })
+      })
     }
   }
   res.sendStatus(200)
