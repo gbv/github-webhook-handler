@@ -36,11 +36,18 @@ A `config.json` file is necessary. It should look like this:
 
 - `port` is the express port the server will be running on.
 - `secret` is the secret configured in the GitHub webook.
+- `verbosity` allows controlling which output is logged.
+  - `log` adds default logging (which webhooks are executed, etc.) as well as error logging for executed commands (default)
+  - `all` is the same as `log`, but also logs standout output of executed commands
+  - `warn` skip all logging, except warnings and error logging for executed commands
+  - `error` skip all logging, except error logging for executed commands
+  - `none` disables all logging
 
 - `webhooks` is an array of objects with the properties
   - `path` (absolute path of the project folder), and
   - `command` (command which to run in the project folder, e.g. `git pull`).
   - A webhook can also have a separate GitHub `secret` configured to override the global secret.
+  - A webhook can also have a separate GitHub `verbosity` configured to override the global verbosity.
   - A webhook can also have a `filter` property where the keys are key paths on the `req` object (like `headers.x-github-event` or `body.action`). The values will be compared and only if all filters match, the webook is executed.
   - There are multiple shortcuts for these filters that can be given directly in the webhook object (**not** the filter object):
     - `repository` (will be moved into `filter["body.repository.full_name"]`), e.g. "gbv/cocoda"

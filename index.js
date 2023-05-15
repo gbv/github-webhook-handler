@@ -10,7 +10,6 @@ try {
 } catch (error) {
   // ignore
 }
-console.log(`Starting GitHub Webhook Handler version ${info?.version} (gbv/github-webhook-handler)...`)
 
 let config
 try {
@@ -19,12 +18,52 @@ try {
   console.error("config.json file is required (see README).")
   process.exit(1)
 }
+// Configure logging
+config.verbosity = ["log", "warn", "error", "all", "none"].includes(config.verbosity) ? config.verbosity : "log"
+config.log = (options) => {
+  let verbosity, message, level
+  if (_.isString(options)) {
+    message = options
+    level = "log"
+    verbosity = config.verbosity
+  } else {
+    verbosity = options.verbosity ?? config.verbosity
+    message = options.message
+    level = options.level ?? "log"
+  }
+  verbosity = verbosity ?? config.verbosity
+  const log = () => console[level](new Date().toISOString(), message)
+  if (verbosity === "none") {
+    return
+  }
+  if (verbosity === "all") {
+    if (level === "all") {
+      level = "log"
+    }
+    log()
+  } else if (verbosity === "log") {
+    if (level !== "all") {
+      log()
+    }
+  } else if (verbosity === "warn") {
+    if (level === "warn" || level === "error") {
+      log()
+    }
+  } else if (verbosity === "error" && level === "error") {
+    log()
+  }
+}
+config.warn = (message) => config.log({ message, level: "warn" })
+config.error = (message) => config.log({ message, level: "error" })
+
+config.log(`Starting GitHub Webhook Handler version ${info?.version} (gbv/github-webhook-handler)...`)
+
 const port = config.port || 2999
 config.webhooks = config.webhooks || []
 if (config.webhooks.length) {
-  console.log(`${config.webhooks.length} webhook(s) configured.`)
+  config.log(`${config.webhooks.length} webhook(s) configured.`)
 } else {
-  console.warn("There are no webhooks configured in config.json. Please add at least one webhook.")
+  config.warn("There are no webhooks configured in config.json. Please add at least one webhook.")
 }
 // Adjust webhooks
 const propertyMappings = {
@@ -75,8 +114,12 @@ app.post("/", (req, res) => {
   )
   for (let match of matches) {
     const uid = crypto.randomBytes(4).toString("hex")
-    const log = (message, { method = "log" } = {}) => {
-      console[method](`${new Date().toISOString()} ${uid} (${req.body.ref || match.path} on ${match.repository}):\n\t${adjustMessage(message)}`)
+    const log = (message, { level = "log" } = {}) => {
+      config.log({
+        message: `${uid} (${req.body.ref || match.path} on ${match.repository}):\n\t${adjustMessage(message)}`,
+        level,
+        verbosity: match.verbosity,
+      })
     }
     const secret = match.secret ?? config.secret
     const sig = secret && "sha1=" + crypto.createHmac("sha1", secret).update(JSON.stringify(req.body)).digest("hex")
@@ -111,12 +154,16 @@ app.post("/", (req, res) => {
       }
       command += `cd ${match.path} && ${match.command}`
       log(`${command}`)
-      exec(command, (error) => {
-        error && log(error.message, { method: "error" })
+      exec(command, (error, stdout) => {
+        if (error) {
+          log(error.message, { level: "error" })
+        } else {
+          log(stdout, { level: "all" })
+        }
       })
     }
   }
   res.sendStatus(200)
 })
 
-app.listen(port, () => console.log(`Listening on port ${port}!`))
+app.listen(port, () => config.log(`Listening on port ${port}!`))
