@@ -78,8 +78,9 @@ app.post("/", (req, res) => {
     const log = (message, { method = "log" } = {}) => {
       console[method](`${new Date().toISOString()} ${uid} (${req.body.ref || match.path} on ${match.repository}):\n\t${adjustMessage(message)}`)
     }
-    let sig = "sha1=" + crypto.createHmac("sha1", match.secret || config.secret).update(JSON.stringify(req.body)).digest("hex")
-    if (req.headers["x-hub-signature"] === sig) {
+    const secret = match.secret ?? config.secret
+    const sig = secret && "sha1=" + crypto.createHmac("sha1", secret).update(JSON.stringify(req.body)).digest("hex")
+    if (sig ? (req.headers["x-hub-signature"] === sig) : match.skipValidation) {
       let command = ""
       // Add environment variables if needed
       _.forEach(match.env || {}, (env, path) => {

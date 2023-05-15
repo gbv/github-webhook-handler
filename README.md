@@ -48,11 +48,15 @@ A `config.json` file is necessary. It should look like this:
     - `action` (will be moved into `filter["body.action"]`), e.g. "released"
     - `ref` (will be moved into `filter["body.ref"]`), e.g. "refs/heads/dev"
   - `skipReleaseCheck` (see below)
+  - `skipValidation` (allows skipping validation if no secret is given)
   - It is also possible to provide environment variables based on the `req` object for the command. These are defined as an object `env` where the keys are key paths on `req` (like in `filter`) and the values are the names of the variable that will be set before exectuing the command.
     - In the example above, the "x-github-event" header will be made available as `$EVENT`.
 
 ### Special Case: Release Handling
 If `event` is set to "release" and `action` is set to "released" or "published", the release version number is checked against the `package.json` file in `path`, if it exists. If it is a new major release or a downgrade (compared to the local version), the command is **not** executed. This behavior can be overridden by setting `skipReleaseCheck` to `true` on the webhook.
+
+### Webhooks Without Signature Validation
+It is possible to configure webhooks without signature validation. **Experimental feature! Please use with caution!** To use this, do not configure a secret (or if a global secret is configured, set the webhook's secret to an empty string) and set `skipValidation` to `true`.
 
 ## Webhook setup
 
