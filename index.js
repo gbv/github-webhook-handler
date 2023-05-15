@@ -153,12 +153,14 @@ app.post("/", (req, res) => {
         }
       }
       command += `cd ${match.path} && ${match.command}`
-      log(`${command}`)
+      log(`Command running: ${command}`)
       exec(command, (error, stdout) => {
         if (error) {
-          log(error.message, { level: "error" })
+          stdout && log(stdout, { level: "all" })
+          error.message && log(error.message, { level: "error" })
         } else {
-          log(stdout, { level: "all" })
+          stdout && log(stdout, { level: "all" })
+          log("Command succeeded.")
         }
       })
     }
