@@ -38,7 +38,7 @@ A `config.json` file is necessary. It should look like this:
 - `secret` is the secret configured in the GitHub webook.
 - `verbosity` allows controlling which output is logged.
   - `log` adds default logging (which webhooks are executed, etc.) as well as error logging for executed commands (default)
-  - `all` is the same as `log`, but also logs standout output of executed commands
+  - `all` is the same as `log`, but also logs standout output of executed commands as well as the full body of unmatched requests
   - `warn` skip all logging, except warnings and error logging for executed commands
   - `error` skip all logging, except error logging for executed commands
   - `none` disables all logging

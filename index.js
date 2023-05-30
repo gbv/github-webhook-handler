@@ -163,7 +163,15 @@ app.post("/", (req, res) => {
           log("Command succeeded.")
         }
       })
+    } else {
+      log("Skipping workflow as signature does not match", { level: "warn" })
     }
+  }
+  if (matches.length === 0) {
+    config.log({
+      message: `Error: Received request that does not match any webhook: ${JSON.stringify(req.body)}`,
+      level: "all",
+    })
   }
   res.sendStatus(200)
 })
