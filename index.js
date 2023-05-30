@@ -103,6 +103,7 @@ app.use(bodyParser.json())
 import Version from "./version.js"
 
 app.post("/", (req, res) => {
+  let code = 200, message = "OK"
   // Run command according to payload
   const matches = config.webhooks.filter(
     entry =>
@@ -165,6 +166,8 @@ app.post("/", (req, res) => {
       })
     } else {
       log("Skipping workflow as signature does not match", { level: "warn" })
+      code = 401
+      message = "Invalid signature"
     }
   }
   if (matches.length === 0) {
@@ -172,8 +175,10 @@ app.post("/", (req, res) => {
       message: `Error: Received request that does not match any webhook: ${JSON.stringify(req.body)}`,
       level: "all",
     })
+    code = 404
+    message = "No matching webhook found"
   }
-  res.sendStatus(200)
+  res.status(code).send(message)
 })
 
 app.listen(port, () => config.log(`Listening on port ${port}!`))

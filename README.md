@@ -65,6 +65,11 @@ If `event` is set to "release" and `action` is set to "released" or "published",
 ### Webhooks Without Signature Validation
 It is possible to configure webhooks without signature validation. **Experimental feature! Please use with caution!** To use this, do not configure a secret (or if a global secret is configured, set the webhook's secret to an empty string) and set `skipValidation` to `true`.
 
+### Status Codes
+- Status 200 (OK) will be returned when a matching webhook was found (the command itself is run asynchronously, so a failed command will not return an error code).
+- Status 401 (Unauthorized) will be returned when there was a matching webhook, but the signature could not be validated.
+- Status 404 (Not Found) will be returned when no matching webhook was found.
+
 ## Webhook setup
 
 It's necessary to select `application/json` content type.
