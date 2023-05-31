@@ -98,11 +98,23 @@ import express from "express"
 import bodyParser from "body-parser"
 
 let app = express()
-app.use(bodyParser.json())
+
+// Saves a valid raw JSON body to req.rawBody
+// Credits to https://stackoverflow.com/a/35651853/90674
+app.use(bodyParser.json({
+  verify: (req, res, buf, encoding) => {
+    if (buf && buf.length) {
+      req.rawBody = buf.toString(encoding || "utf8")
+    }
+  },
+}))
 
 import Version from "./version.js"
 
 app.post("/", (req, res) => {
+  if (!req.rawBody) {
+    res.status(401).send("Empty request body")
+  }
   let code = 200, message = "OK"
   // Run command according to payload
   const matches = config.webhooks.filter(
@@ -123,7 +135,7 @@ app.post("/", (req, res) => {
       })
     }
     const secret = match.secret ?? config.secret
-    const sig = secret && "sha1=" + crypto.createHmac("sha1", secret).update(JSON.stringify(req.body)).digest("hex")
+    const sig = secret && "sha1=" + crypto.createHmac("sha1", secret).update(req.rawBody).digest("hex")
     if (sig ? (req.headers["x-hub-signature"] === sig) : match.skipValidation) {
       let command = ""
       // Add environment variables if needed
