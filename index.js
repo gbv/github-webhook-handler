@@ -113,7 +113,7 @@ import Version from "./version.js"
 
 app.post("/", (req, res) => {
   if (!req.rawBody) {
-    res.status(401).send("Empty request body")
+    res.status(400).send("Empty request body")
   }
   let code = 200, message = "OK"
   // Run command according to payload
@@ -178,8 +178,8 @@ app.post("/", (req, res) => {
       })
     } else {
       log("Skipping workflow as signature does not match", { level: "warn" })
-      code = 401
-      message = "Invalid signature"
+      code = 403
+      message = "Request body was not signed or verification failed"
     }
   }
   if (matches.length === 0) {

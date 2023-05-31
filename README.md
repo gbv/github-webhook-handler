@@ -67,7 +67,8 @@ It is possible to configure webhooks without signature validation. **Experimenta
 
 ### Status Codes
 - Status 200 (OK) will be returned when a matching webhook was found (the command itself is run asynchronously, so a failed command will not return an error code).
-- Status 401 (Unauthorized) will be returned when there was a matching webhook, but the signature could not be validated.
+- Status 400 (Bad Request) will be returned when there is an issue parsing the request body.
+- Status 403 (Forbidden) will be returned when there was a matching webhook, but the signature could not be validated.
 - Status 404 (Not Found) will be returned when no matching webhook was found.
 
 ## Webhook setup
