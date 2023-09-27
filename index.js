@@ -152,7 +152,10 @@ app.post("/", (req, res) => {
           const fromVersion = Version.from(packageInfo.version)
           const toVersion = Version.from(req.body.release.tag_name)
           let reason
-          if (toVersion.major > fromVersion.major) {
+          if (
+            (toVersion.major > fromVersion.major) ||
+            (fromVersion.major === 0 && toVersion.major === 0 && toVersion.minor > fromVersion.minor)
+          ) {
             reason = "major update"
           } else if (toVersion.lt(fromVersion)) {
             reason = "downgrade"
