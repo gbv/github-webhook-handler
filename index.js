@@ -18,6 +18,10 @@ try {
   console.error("config.json file is required (see README).")
   process.exit(1)
 }
+
+// Also support secret from enviroment variable
+config.secret = config.secret ?? process.env.WEBHOOK_SECRET
+
 // Configure logging
 config.verbosity = ["log", "warn", "error", "all", "none"].includes(config.verbosity) ? config.verbosity : "log"
 config.log = (options) => {
@@ -65,6 +69,11 @@ if (config.webhooks.length) {
 } else {
   config.warn("There are no webhooks configured in config.json. Please add at least one webhook.")
 }
+
+if (!config.secret) {
+  config.warn("No global secret provided. Only webhooks with a local secret or skipValidation are executed.")
+}
+
 // Adjust webhooks
 const propertyMappings = {
   repository: "body.repository.full_name",

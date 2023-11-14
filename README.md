@@ -36,6 +36,7 @@ A `config.json` file is necessary. It should look like this:
 
 - `port` is the express port the server will be running on.
 - `secret` is the secret configured in the GitHub webook.
+  - The secret can also be provided via the environment variable `WEBHOOK_SECRET`.
 - `verbosity` allows controlling which output is logged.
   - `log` adds default logging (which webhooks are executed, etc.) as well as error logging for executed commands (default)
   - `all` is the same as `log`, but also logs standout output of executed commands as well as the full body of unmatched requests
