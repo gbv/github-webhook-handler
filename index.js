@@ -125,9 +125,6 @@ app.use(bodyParser.json({
 import Version from "./version.js"
 
 app.post("/", (req, res) => {
-  if (!req.rawBody) {
-    res.status(400).send("Empty request body")
-  }
   let code = 200, message = "OK"
   // Run command according to payload
   const matches = config.webhooks.filter(
@@ -142,7 +139,7 @@ app.post("/", (req, res) => {
     const uid = crypto.randomBytes(4).toString("hex")
     const log = (message, { level = "log" } = {}) => {
       config.log({
-        message: `${uid} (${req.body.ref || match.path} on ${match.repository}):\n\t${adjustMessage(message)}`,
+        message: `${uid} (${req.body?.ref || match.path} on ${match.repository}):\n\t${adjustMessage(message)}`,
         level,
         verbosity: match.verbosity,
       })
@@ -167,7 +164,7 @@ app.post("/", (req, res) => {
         try {
           const packageInfo = JSON.parse(fs.readFileSync(path.resolve(match.path, "package.json")))
           const fromVersion = Version.from(packageInfo.version)
-          const toVersion = Version.from(req.body.release.tag_name)
+          const toVersion = Version.from(req.body?.release.tag_name)
           let reason
           if (
             (toVersion.major > fromVersion.major) ||
@@ -204,7 +201,7 @@ app.post("/", (req, res) => {
   }
   if (matches.length === 0) {
     config.log({
-      message: `Error: Received request that does not match any webhook: ${JSON.stringify(req.body)}`,
+      message: `Error: Received request that does not match any webhook: ${JSON.stringify(req.body || {})}`,
       level: "all",
     })
     code = 404
