@@ -148,8 +148,12 @@ app.post("/", (req, res) => {
       })
     }
     const secret = match.secret ?? config.secret
-    const sig = secret && "sha1=" + crypto.createHmac("sha1", secret).update(req.rawBody).digest("hex")
-    if (sig ? (req.headers["x-hub-signature"] === sig) : match.skipValidation) {
+    let verified = !!match.skipValidation
+    if (secret && req.rawBody && req.headers["x-hub-signature"]) {
+      const sig = "sha1=" + crypto.createHmac("sha1", secret).update(req.rawBody).digest("hex")
+      verified = req.headers["x-hub-signature"] === sig
+    }
+    if (verified) {
       let command = ""
       // Add environment variables if needed
       _.forEach(match.env || {}, (env, path) => {
