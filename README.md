@@ -45,8 +45,8 @@ A `config.json` file is necessary. It should look like this:
   - `none` disables all logging
 
 - `webhooks` is an array of objects with the properties
-  - `path` (absolute path of the project folder), and
-  - `command` (command which to run in the project folder, e.g. `git pull`).
+  - `path` (absolute path of the project folder; will be the user's home folder by default)
+  - `command` (command which to run in the project folder, e.g. `git pull`)
   - A webhook can also have a separate GitHub `secret` configured to override the global secret.
   - A webhook can also have a separate GitHub `verbosity` configured to override the global verbosity.
   - A webhook can also have a `filter` property where the keys are key paths on the `req` object (like `headers.x-github-event` or `body.action`). The values will be compared and only if all filters match, the webook is executed.

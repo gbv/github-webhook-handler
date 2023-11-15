@@ -90,6 +90,10 @@ for (let webhook of config.webhooks) {
       webhook.filter[value] = webhook[key]
     }
   })
+  // Set default for `path` to home folder
+  if (!webhook.path && process.env.HOME) {
+    webhook.path = process.env.HOME
+  }
 }
 
 const adjustMessage = (message) => {
