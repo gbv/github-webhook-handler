@@ -12,6 +12,13 @@ echo "{}" > config.json
 npm run start
 ```
 
+### Run with Deno
+Deno should be able to run this without modification:
+
+```sh
+deno run --allow-env --allow-read --allow-net --allow-run index.js
+```
+
 ## Configuration
 
 A `config.json` file is necessary. It should look like this:
