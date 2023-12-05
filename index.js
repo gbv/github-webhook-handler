@@ -185,13 +185,22 @@ app.post("/", (req, res) => {
       }
       command += `cd ${match.path} && ${match.command}`
       log(`Command running: ${command}`)
-      exec(command, (error, stdout) => {
-        if (error) {
-          stdout && log(stdout, { level: "all" })
-          error.message && log(error.message, { level: "error" })
-        } else {
-          stdout && log(stdout, { level: "all" })
+      let output = ""
+      const pc = exec(command)
+      // Note: stdout and stderr might not arrive in right order, but this can't be fixed as pipes are buffered.
+      pc.stdout.on("data", (data) => {
+        output += data
+      })
+      pc.stderr.on("data", (data) => {
+        output += data
+      })
+      pc.on("exit", (code, signal) => {
+        if (code !== null && code === 0) {
+          output && log(output, { level: "all" })
           log("Command succeeded.")
+        } else {
+          output && log(output, { level: "error" })
+          log(`Command failed ${code !== null ? `with exit code ${code}` : `after being terminated by signal ${signal}`}.`, { level: "error" })
         }
       })
     } else {
