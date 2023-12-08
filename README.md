@@ -46,7 +46,8 @@ A `config.json` file is necessary. It should look like this:
   - The secret can also be provided via the environment variable `WEBHOOK_SECRET`.
 - `verbosity` allows controlling which output is logged.
   - `log` adds default logging (which webhooks are executed, etc.) as well as error logging for executed commands (default)
-  - `all` is the same as `log`, but also logs standout output of executed commands as well as the full body of unmatched requests
+  - `verbose` is the same as `log`, but also logs standout output of executed commands
+  - `all` is the same as `verbose`, but also logs the full body of unmatched requests
   - `warn` skip all logging, except warnings and error logging for executed commands
   - `error` skip all logging, except error logging for executed commands
   - `none` disables all logging

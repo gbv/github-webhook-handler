@@ -24,7 +24,7 @@ try {
 config.secret = config.secret ?? process.env.WEBHOOK_SECRET
 
 // Configure logging
-config.verbosity = ["log", "warn", "error", "all", "none"].includes(config.verbosity) ? config.verbosity : "log"
+config.verbosity = ["log", "warn", "error", "verbose", "all", "none"].includes(config.verbosity) ? config.verbosity : "log"
 config.log = (options) => {
   let verbosity, message, level
   if (_.isString(options)) {
@@ -42,12 +42,19 @@ config.log = (options) => {
     return
   }
   if (verbosity === "all") {
-    if (level === "all") {
+    if (level === "all" || level === "verbose") {
       level = "log"
     }
     log()
-  } else if (verbosity === "log") {
+  } else if (verbosity === "verbose") {
     if (level !== "all") {
+      if (level === "verbose") {
+        level = "log"
+      }
+      log()
+    }
+  } else if (verbosity === "log") {
+    if (level !== "all" && level !== "verbose") {
       log()
     }
   } else if (verbosity === "warn") {
@@ -196,7 +203,7 @@ app.post("/", (req, res) => {
       })
       pc.on("exit", (code, signal) => {
         if (code !== null && code === 0) {
-          output && log(output, { level: "all" })
+          output && log(output, { level: "verbose" })
           log("Command succeeded.")
         } else {
           output && log(output, { level: "error" })
