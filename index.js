@@ -217,10 +217,20 @@ app.post("/", (req, res) => {
     }
   }
   if (matches.length === 0) {
-    config.log({
-      message: `Error: Received request that does not match any webhook: ${JSON.stringify(req.body || {})}`,
-      level: "all",
-    })
+    const repository = _.get(req, propertyMappings.repository, "unknown")
+    const event = _.get(req, propertyMappings.event, "unknown")
+    const logMessage = `Error: Received request from repository ${repository} (event: ${event}) that does not match any webhook`
+    if (config.verbosity === "all") {
+      config.log({
+        message: `${logMessage}: ${JSON.stringify(req.body || {})}`,
+        level: "all",
+      })
+    } else {
+      config.log({
+        message: `${logMessage}.`,
+        level: "verbose",
+      })
+    }
     code = 404
     message = "No matching webhook found"
   }
