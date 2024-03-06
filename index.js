@@ -160,6 +160,11 @@ app.post("/", (req, res) => {
     }
     if (verified) {
       let command = ""
+      // Add delay if needed
+      const delay = parseInt(match.delay ?? config.delay ?? 0)
+      if (delay) {
+        command += `sleep ${delay}; `
+      }
       // Add environment variables if needed
       _.forEach(match.env || {}, (env, path) => {
         let value = _.get(req, path)
