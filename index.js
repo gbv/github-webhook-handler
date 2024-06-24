@@ -134,6 +134,12 @@ import Version from "./version.js"
 
 app.post("/", (req, res) => {
   let code = 200, message = "OK"
+  // Adjust body if necessary
+  if (_.isString(req.body?.repository)) {
+    req.body.repository = {
+      full_name: req.body.repository,
+    }
+  }
   // Run command according to payload
   const matches = config.webhooks.filter(
     entry =>
