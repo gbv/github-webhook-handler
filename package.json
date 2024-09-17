@@ -10,6 +10,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon index.js",
+    "lint": "eslint",
+    "fix": "eslint --fix",
     "lint-staged": "lint-staged",
     "release": "git checkout dev && git pull && npm version $SEMVER && git push && git checkout master && git merge dev && git push --follow-tags && git checkout dev",
     "release:patch": "SEMVER=patch npm run release",
@@ -36,8 +38,8 @@
   },
   "homepage": "https://github.com/gbv/github-webhook-handler#readme",
   "devDependencies": {
-    "eslint": "^8.57.0",
-    "eslint-config-gbv": "^1.1.0",
+    "eslint": "^9.10.0",
+    "eslint-config-gbv": "^2.0.0",
     "lint-staged": "^15.2.7",
     "nodemon": "^3.1.4",
     "pre-commit": "^1.2.2"
