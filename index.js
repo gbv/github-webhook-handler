@@ -132,6 +132,19 @@ app.use(bodyParser.json({
 
 import Version from "./version.js"
 
+function isVerified({ match, req }) {
+  if (!match || !req) {
+    return false
+  }
+  const secret = match.secret ?? config.secret
+  let verified = !!match.skipValidation
+  if (secret && req.rawBody && req.headers["x-hub-signature"]) {
+    const sig = "sha1=" + crypto.createHmac("sha1", secret).update(req.rawBody).digest("hex")
+    verified = req.headers["x-hub-signature"] === sig
+  }
+  return verified
+}
+
 app.post("/", (req, res) => {
   let code = 200, message = "OK"
   // Adjust body if necessary
@@ -158,12 +171,7 @@ app.post("/", (req, res) => {
         verbosity: match.verbosity,
       })
     }
-    const secret = match.secret ?? config.secret
-    let verified = !!match.skipValidation
-    if (secret && req.rawBody && req.headers["x-hub-signature"]) {
-      const sig = "sha1=" + crypto.createHmac("sha1", secret).update(req.rawBody).digest("hex")
-      verified = req.headers["x-hub-signature"] === sig
-    }
+    const verified = isVerified({ match, req })
     if (verified) {
       let command = ""
       // Add delay if needed
