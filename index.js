@@ -238,20 +238,30 @@ app.post("/", (req, res) => {
   if (matches.length === 0) {
     const repository = _.get(req, propertyMappings.repository, "unknown")
     const event = _.get(req, propertyMappings.event, "unknown")
-    const logMessage = `Error: Received request from repository ${repository} (event: ${event}) that does not match any webhook`
-    if (config.verbosity === "all") {
-      config.log({
-        message: `${logMessage}: ${JSON.stringify(req.body || {})}`,
-        level: "all",
-      })
+    // Separately handle ping event
+    const repoMatches = config.webhooks.filter(entry => entry.repository === repository)
+    if (event === "ping" && repoMatches.length) {
+      const verified = repoMatches.map(match => isVerified({ match, req }))
+      message = `Acknowledging ping, ${repoMatches.length} webhooks for repository ${repository} found.`
+      if (verified.includes(false)) {
+        message += " (Warning: Verification failed for some or all of the webhook matches.)"
+      }
     } else {
-      config.log({
-        message: `${logMessage}.`,
-        level: "verbose",
-      })
+      const logMessage = `Error: Received request from repository ${repository} (event: ${event}) that does not match any webhook`
+      if (config.verbosity === "all") {
+        config.log({
+          message: `${logMessage}: ${JSON.stringify(req.body || {})}`,
+          level: "all",
+        })
+      } else {
+        config.log({
+          message: `${logMessage}.`,
+          level: "verbose",
+        })
+      }
+      code = 404
+      message = "No matching webhook found"
     }
-    code = 404
-    message = "No matching webhook found"
   }
   res.status(code).send(message)
 })
