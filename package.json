@@ -38,10 +38,10 @@
   },
   "homepage": "https://github.com/gbv/github-webhook-handler#readme",
   "devDependencies": {
-    "eslint": "^9.10.0",
-    "eslint-config-gbv": "^2.0.0",
+    "eslint": "~9.11",
+    "eslint-config-gbv": "~2.1",
     "lint-staged": "^15.2.10",
-    "nodemon": "^3.1.4",
+    "nodemon": "^3.1.7",
     "pre-commit": "^1.2.2"
   },
   "dependencies": {
