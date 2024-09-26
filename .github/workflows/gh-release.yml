@@ -9,14 +9,10 @@ jobs:
   github-release:
     runs-on: ubuntu-latest
     steps:
-      - name: Create GitHub release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: GitHub Webhook Handler ${{ github.ref }}
-          body: TODO
-          draft: true
-          prerelease: false
+    - name: Create GitHub release
+      uses: softprops/action-gh-release@v2
+      with:
+        name: GitHub Webhook Handler ${{ github.ref_name }}
+        body: TODO
+        draft: true
+        prerelease: false
