@@ -1,8 +1,9 @@
 # GitHub Webhook Handler
 
-A small express server to run commands for GitHub webhooks.
+A small Express server to run commands for GitHub webhooks.
 
 ## Installation
+Requires Node.js 18 or later.
 
 ```bash
 git clone
@@ -20,7 +21,6 @@ deno run --allow-env --allow-read --allow-net --allow-run index.js
 ```
 
 ## Configuration
-
 A `config.json` file is necessary. It should look like this:
 
 ```json
@@ -81,5 +81,40 @@ It is possible to configure webhooks without signature validation. **Experimenta
 - Status 404 (Not Found) will be returned when no matching webhook was found.
 
 ## Webhook setup
+On your GitHub repository page, go to Settings - Webhooks - Add Webhook:
 
-It's necessary to select `application/json` content type.
+- Payload URL: Base URL of your GitHub Webhook Handler installation.
+- Content type: `application/json`
+- Secret: The `secret` specified in your configuration (either global or for that particular repository).
+
+## Maintainers
+- [@stefandesu](https://github.com/stefandesu)
+
+## Publish
+Please work on the `dev` branch during development (or better yet, develop in a feature branch and merge into `dev` when ready).
+
+When a new release is ready (i.e. the features are finished, merged into `dev`, and all tests succeed), run the included release script (replace "patch" with "minor" or "major" if necessary):
+
+```bash
+npm run release:patch
+```
+
+This will:
+- Make sure we are currently on `dev` branch
+- Make sure `dev` is up-to-date
+- Run `npm version patch` (or "minor"/"major")
+- Push changes to `dev`
+- Switch to `master`
+- Merge changes from `dev`
+- Push `master` with tags
+- Switch back to `dev`
+
+After running this, GitHub Actions will automatically publish the new version to npm. It will also create a new GitHub Release draft. Please edit and publish the release manually.
+
+## Contribute
+PRs accepted.
+
+Small note: If editing the README, please conform to the [standard-readme](https://github.com/RichardLitt/standard-readme) specification.
+
+## License
+MIT Copyright (c) 2024 Verbundzentrale des GBV (VZG)
