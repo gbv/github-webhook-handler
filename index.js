@@ -160,7 +160,9 @@ app.post("/", (req, res) => {
       _.keys(entry.filter)
         .map(key => _.isEqual(entry.filter[key], _.get(req, key)))
         // All filters have to match
-        .reduce((a, b) => a && b, true),
+        .reduce((a, b) => a && b, true)
+      // Add exclusion for "gh-pages" branch
+      && (entry.filter?.ref || req.body?.ref !== "refs/heads/gh-pages"),
   )
   for (let match of matches) {
     const uid = crypto.randomBytes(4).toString("hex")
