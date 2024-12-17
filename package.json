@@ -17,7 +17,8 @@
     "release": "test $(git rev-parse --abbrev-ref HEAD) = dev && git pull && npm version $SEMVER && npm run --silent yesno && (git push && git checkout master && git merge dev && git push --follow-tags && git checkout dev) || (git tag -d $(git describe --tags) && git reset --hard HEAD~1)",
     "release:patch": "SEMVER=patch npm run release",
     "release:minor": "SEMVER=minor npm run release",
-    "release:major": "SEMVER=major npm run release"
+    "release:major": "SEMVER=major npm run release",
+    "prepare": "husky || true"
   },
   "lint-staged": {
     "**/*.js": [
@@ -27,7 +28,6 @@
       "eslint --fix"
     ]
   },
-  "pre-commit": "lint-staged",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/gbv/github-webhook-handler.git"
@@ -41,9 +41,9 @@
   "devDependencies": {
     "eslint": "~9.16",
     "eslint-config-gbv": "~2.6",
+    "husky": "^9.1.7",
     "lint-staged": "^15.2.11",
     "nodemon": "^3.1.9",
-    "pre-commit": "^1.2.2",
     "yesno": "^0.4.0"
   },
   "dependencies": {
